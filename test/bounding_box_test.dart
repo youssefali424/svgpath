@@ -13,7 +13,7 @@ void main() {
     expect(
         new SvgPath(
                 'M600,350 l 50,-25             a25,25 -30 0,1 50,-25 l 50,-25             a25,50 -30 0,1 50,-25 l 50,-25             a25,75 -30 0,1 50,-25 l 50,-25             a25,100 -30 0,1 50,-25 l 50,-25')
-            .boundingBox
+            .boundingBox!
             .round(2),
         equals(new BoundingBox(600, 64.83, 450, 285.17)));
 

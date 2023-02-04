@@ -3,8 +3,6 @@
 
 import 'dart:math';
 
-import 'package:dart2_constant/core.dart' as core;
-
 import 'path_parse.dart';
 import 'matrix.dart';
 import 'ellipse.dart';
@@ -14,19 +12,19 @@ import 'bounding_box.dart';
 
 export 'path_parse.dart' show ParseResult;
 
-typedef Iterator(List s, int index, num x, num y);
+typedef Iterator(List s, int index, num? x, num? y);
 
 class SvgPath {
-  String err;
+  String? err;
 
   // Array of path segments.
   // Each segment is array [command, param1, param2, ...]
-  List<List<dynamic>> segments;
+  late List<List<dynamic>> segments;
 
   // Transforms stack for lazy evaluation
   List _stack = [];
 
-  BoundingBox _bbox;
+  BoundingBox? _bbox;
 
   SvgPath(String path) {
     var pr = parsePath(path);
@@ -47,7 +45,7 @@ class SvgPath {
       return;
     }
 
-    iterate((List s, int index, num x, num y) {
+    iterate((List s, int index, num? x, num? y) {
       var p, result;
 
       switch (s[0]) {
@@ -82,12 +80,12 @@ class SvgPath {
           }*/
 
           // Transform rx, ry and the x-axis-rotation
-          var ma = m.toArray();
+          var ma = m.toArray()!;
           var ellipse = new Ellipse(s[1], s[2], s[3]);
           ellipse.transform(ma);
 
           // flip sweep-flag if matrix is not orientation-preserving
-          if (ma[0] * ma[3] - ma[1] * ma[2] < 0) {
+          if (ma[0]! * ma[3]! - ma[1]! * ma[2]! < 0) {
             s[5] = s[5] != 0 ? '0' : '1';
           }
 
@@ -209,7 +207,7 @@ class SvgPath {
 
   // Scale path to (sx [, sy])
   // sy = sx if not specified
-  SvgPath scale(num sx, [num sy = null]) {
+  SvgPath scale(num sx, [num? sy = null]) {
     _stack.add(new Matrix()..scale(sx, sy == null ? sx : sy));
     return this;
   }
@@ -253,10 +251,10 @@ class SvgPath {
   SvgPath round([num digits = 0]) {
     _evaluateStack();
 
-    num contourStartDeltaX = 0;
-    num contourStartDeltaY = 0;
-    num deltaX = 0;
-    num deltaY = 0;
+    num? contourStartDeltaX = 0;
+    num? contourStartDeltaY = 0;
+    num? deltaX = 0;
+    num? deltaY = 0;
 
     for (var seg in segments) {
       var isRelative = (seg[0].toLowerCase() == seg[0]);
@@ -268,7 +266,7 @@ class SvgPath {
             seg[1] += deltaX;
           }
           deltaX = seg[1] - double.parse(seg[1].toStringAsFixed(digits));
-          seg[1] = toFixed(seg[1], digits);
+          seg[1] = toFixed(seg[1], digits as int);
           break;
 
         case 'V':
@@ -277,7 +275,7 @@ class SvgPath {
             seg[1] += deltaY;
           }
           deltaY = seg[1] - double.parse(seg[1].toStringAsFixed(digits));
-          seg[1] = toFixed(seg[1], digits);
+          seg[1] = toFixed(seg[1], digits as int);
           break;
 
         case 'Z':
@@ -299,7 +297,7 @@ class SvgPath {
           contourStartDeltaX = deltaX;
           contourStartDeltaY = deltaY;
 
-          seg[1] = toFixed(seg[1], digits);
+          seg[1] = toFixed(seg[1], digits as int);
           seg[2] = toFixed(seg[2], digits);
           break;
 
@@ -314,7 +312,7 @@ class SvgPath {
           deltaX = seg[6] - double.parse(seg[6].toStringAsFixed(digits));
           deltaY = seg[7] - double.parse(seg[7].toStringAsFixed(digits));
 
-          seg[1] = toFixed(seg[1], digits);
+          seg[1] = toFixed(seg[1], digits as int);
           seg[2] = toFixed(seg[2], digits);
           seg[3] = toFixed(seg[3], digits + 2); // better precision for rotation
           seg[6] = toFixed(seg[6], digits);
@@ -336,7 +334,7 @@ class SvgPath {
               seg[l - 1] - double.parse(seg[l - 1].toStringAsFixed(digits));
 
           for (int i = 1; i < l; i++) {
-            seg[i] = toFixed(seg[i], digits);
+            seg[i] = toFixed(seg[i], digits as int);
           }
           break;
       }
@@ -353,10 +351,10 @@ class SvgPath {
     }
 
     var index = 0;
-    var lastX = 0;
-    var lastY = 0;
-    var countourStartX = 0;
-    var countourStartY = 0;
+    int? lastX = 0;
+    int? lastY = 0;
+    int? countourStartX = 0;
+    int? countourStartY = 0;
 
     var replacements = {};
     var needReplace = false;
@@ -429,7 +427,7 @@ class SvgPath {
 
   // Converts segments from relative to absolute
   SvgPath abs() {
-    iterate((List s, int index, num x, num y) {
+    iterate((List s, int index, num? x, num? y) {
       var cmd = s[0];
       var cmdUC = cmd.toUpperCase();
 
@@ -464,7 +462,7 @@ class SvgPath {
 
   // Converts segments from absolute to relative
   SvgPath rel() {
-    iterate((List s, int index, num x, num y) {
+    iterate((List s, int index, num? x, num? y) {
       var cmd = s[0];
       var cmdLC = cmd.toLowerCase();
 
@@ -504,7 +502,7 @@ class SvgPath {
 
   // Converts arcs to cubic bézier curves
   SvgPath unarc() {
-    iterate((List s, int index, num x, num y) {
+    iterate((List s, int index, num? x, num? y) {
       var cmd = s[0];
 
       // Skip anything except arcs
@@ -515,14 +513,14 @@ class SvgPath {
       var nextX, nextY;
       if (cmd == 'a') {
         // convert relative arc coordinates to absolute
-        nextX = x + s[6];
-        nextY = y + s[7];
+        nextX = x! + s[6];
+        nextY = y! + s[7];
       } else {
         nextX = s[6];
         nextY = s[7];
       }
 
-      var newSegments = a2c(x, y, nextX, nextY, s[4], s[5], s[1], s[2], s[3]);
+      var newSegments = a2c(x!, y!, nextX, nextY, s[4], s[5], s[1], s[2], s[3]);
 
       // Degenerated arcs can be ignored by renderer, but should not be dropped
       // to avoid collisions with `S A S` and so on. Replace with empty line.
@@ -557,7 +555,7 @@ class SvgPath {
 
     // TODO: add lazy evaluation flag when relative commands supported
 
-    iterate((List s, int index, num x, num y) {
+    iterate((List s, int index, num? x, num? y) {
       var cmd = s[0];
       var cmdUC = cmd.toUpperCase();
 
@@ -639,7 +637,7 @@ class SvgPath {
   }
 
   // Get the bounding box of the path
-  BoundingBox get boundingBox {
+  BoundingBox? get boundingBox {
     _evaluateStack();
 
     if (_bbox != null) {
@@ -650,30 +648,31 @@ class SvgPath {
     var path = new SvgPath._clone(segments);
 
     // from https://github.com/icons8/svg-path-bounding-box
-    var x1 = core.double.maxFinite;
-    var y1 = core.double.maxFinite;
-    var x2 = -core.double.maxFinite;
-    var y2 = -core.double.maxFinite;
+    var x1 = double.maxFinite;
+    var y1 = double.maxFinite;
+    var x2 = -double.maxFinite;
+    var y2 = -double.maxFinite;
 
     // from https://github.com/gabelerner/canvg/blob/860e418aca67b9a41e858a223d74d375793ec364/canvg.js#L449
-    var addX = (num x) {
-      var xd = x.toDouble();
+    var addX = (num? x) {
+      var xd = x!.toDouble();
       x1 = min(x1, xd);
       x2 = max(x2, xd);
     };
 
-    var addY = (num y) {
-      var yd = y.toDouble();
+    var addY = (num? y) {
+      var yd = y!.toDouble();
       y1 = min(y1, yd);
       y2 = max(y2, yd);
     };
 
-    var addPoint = (num x, num y) {
+    var addPoint = (num? x, num? y) {
       addX(x);
       addY(y);
     };
 
-    var addBezierCurve = (num p0x, num p0y, num p1x, num p1y, num p2x, num p2y, num p3x, num p3y) {
+    var addBezierCurve = (num? p0x, num? p0y, num? p1x, num? p1y, num? p2x, num? p2y,
+        num? p3x, num? p3y) {
       // from http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
       var p0 = [p0x, p0y];
       var p1 = [p1x, p1y];
@@ -685,15 +684,15 @@ class SvgPath {
 
       for (var i = 0; i <= 1; i++) {
         var f = (t) {
-          return pow(1 - t, 3) * p0[i]
-              + 3 * pow(1 - t, 2) * t * p1[i]
-              + 3 * (1 - t) * pow(t, 2) * p2[i]
-              + pow(t, 3) * p3[i];
+          return pow(1 - t, 3) * p0[i]! +
+              3 * pow(1 - t, 2) * t * p1[i]! +
+              3 * (1 - t) * pow(t, 2) * p2[i]! +
+              pow(t, 3) * p3[i]!;
         };
 
-        var b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
-        var a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
-        var c = 3 * p1[i] - 3 * p0[i];
+        var b = 6 * p0[i]! - 12 * p1[i]! + 6 * p2[i]!;
+        var a = -3 * p0[i]! + 9 * p1[i]! - 9 * p2[i]! + 3 * p3[i]!;
+        var c = 3 * p1[i]! - 3 * p0[i]!;
 
         if (a == 0) {
           if (b == 0) {
@@ -740,15 +739,16 @@ class SvgPath {
       }
     };
 
-    var addQuadraticCurve = (num p0x, num p0y, num p1x, num p1y, num p2x, num p2y) {
-      var cp1x = p0x + 2 / 3 * (p1x - p0x); // CP1 = QP0 + 2/3 *(QP1-QP0)
-      var cp1y = p0y + 2 / 3 * (p1y - p0y); // CP1 = QP0 + 2/3 *(QP1-QP0)
-      var cp2x = cp1x + 1 / 3 * (p2x - p0x); // CP2 = CP1 + 1/3 *(QP2-QP0)
-      var cp2y = cp1y + 1 / 3 * (p2y - p0y); // CP2 = CP1 + 1/3 *(QP2-QP0)
+    var addQuadraticCurve =
+        (num? p0x, num? p0y, num? p1x, num? p1y, num? p2x, num? p2y) {
+      num cp1x = p0x! + 2 / 3 * (p1x! - p0x); // CP1 = QP0 + 2/3 *(QP1-QP0)
+      num cp1y = p0y! + 2 / 3 * (p1y! - p0y); // CP1 = QP0 + 2/3 *(QP1-QP0)
+      num cp2x = cp1x + 1 / 3 * (p2x! - p0x); // CP2 = CP1 + 1/3 *(QP2-QP0)
+      num cp2y = cp1y + 1 / 3 * (p2y! - p0y); // CP2 = CP1 + 1/3 *(QP2-QP0)
       addBezierCurve(p0x, p0y, cp1x, cp1y, cp2x, cp2y, p2x, p2y);
     };
 
-    path.abs().unarc().unshort().iterate((List seg, int index, num x, num y) {
+    path.abs().unarc().unshort().iterate((List seg, int index, num? x, num? y) {
       switch (seg[0]) {
         case 'M':
         case 'L':

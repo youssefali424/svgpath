@@ -123,7 +123,7 @@ void _scanParam(_State state) {
     return;
   }
 
-  var ch = state.path.codeUnitAt(index);
+  int? ch = state.path.codeUnitAt(index);
 
   if (ch == 0x2B /* + */ || ch == 0x2D /* - */) {
     ++index;
@@ -229,10 +229,10 @@ void _finalizeSegment(_State state) {
     seg.addAll(params);
     state.result.add(seg);
   } else {
-    while (params.length >= _paramCounts[cmdLC]) {
+    while (params.length >= _paramCounts[cmdLC]!) {
       var seg = <dynamic>[cmd];
       seg.addAll(params.sublist(0, _paramCounts[cmdLC]));
-      params.removeRange(0, _paramCounts[cmdLC]);
+      params.removeRange(0, _paramCounts[cmdLC]!);
       state.result.add(seg);
       if (_paramCounts[cmdLC] == 0) {
         break;
@@ -267,7 +267,7 @@ void _scanSegment(_State state) {
   var comma_found = false;
 
   for (;;) {
-    for (int i = need_params; i > 0; i--) {
+    for (int i = need_params!; i > 0; i--) {
       _scanParam(state);
       if (state.err.isNotEmpty) {
         return;

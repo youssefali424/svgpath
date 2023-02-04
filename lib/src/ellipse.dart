@@ -3,19 +3,17 @@
 
 import 'dart:math';
 
-import 'package:dart2_constant/math.dart' as math;
-
 import 'matrix.dart';
 
 const epsilon = 0.0000000001;
 
 // To convert degree in radians
-const torad = math.pi / 180;
+const torad = pi / 180;
 
 class Ellipse {
-  num rx;
-  num ry;
-  num ax;
+  num? rx;
+  num? ry;
+  num? ax;
 
   Ellipse(this.rx, this.ry, this.ax);
 
@@ -25,17 +23,17 @@ class Ellipse {
   //   | m[0] m[2] |
   //   | m[1] m[3] |
   //    -         -
-  void transform(List<num> m) {
+  void transform(List<num?> m) {
     // We consider the current ellipse as image of the unit circle
     // by first scale(rx,ry) and then rotate(ax) ...
     // So we apply ma =  m x rotate(ax) x scale(rx,ry) to the unit circle.
-    var c = cos(ax * torad);
-    var s = sin(ax * torad);
+    var c = cos(ax! * torad);
+    var s = sin(ax! * torad);
     var ma = [
-      rx * (m[0] * c + m[2] * s),
-      rx * (m[1] * c + m[3] * s),
-      ry * (-m[0] * s + m[2] * c),
-      ry * (-m[1] * s + m[3] * c)
+      rx! * (m[0]! * c + m[2]! * s),
+      rx! * (m[1]! * c + m[3]! * s),
+      ry! * (-m[0]! * s + m[2]! * c),
+      ry! * (-m[1]! * s + m[3]! * c)
     ];
 
     // ma * transpose(ma) = [ J L ]
@@ -74,20 +72,20 @@ class Ellipse {
         ? 90
         : fixInt(atan(L.abs() > (l1 - K).abs() ? (l1 - J) / L : L / (l1 - K)) *
             180 /
-            math.pi);
+            pi);
 
     // if ax > 0 => rx = sqrt(l1), ry = sqrt(l2), else exchange axes and ax += 90
-    if (ax >= 0) {
+    if (ax! >= 0) {
       // if ax in [0,90]
       rx = fixInt(sqrt(l1));
       ry = fixInt(sqrt(l2));
     } else {
       // if ax in ]-90,0[ => exchange axes
-      ax += 90;
+      ax = ax! + 90;
       rx = fixInt(sqrt(l2));
       ry = fixInt(sqrt(l1));
     }
   }
 
-  bool get isDegenerate => rx < epsilon * ry || ry < epsilon * rx;
+  bool get isDegenerate => rx! < epsilon * ry! || ry! < epsilon * rx!;
 }

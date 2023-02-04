@@ -5,7 +5,7 @@ import '../lib/src/matrix.dart';
 import 'package:test/test.dart';
 
 void main() {
-  Matrix matrix;
+  late Matrix matrix;
 
   setUp(() {
     matrix = new Matrix();
@@ -59,15 +59,15 @@ void main() {
       ..rotate(180, 10, 10)
       ..rotate(180, 10, 10);
 
-    var m = matrix.toArray();
+    var m = matrix.toArray()!;
 
     // Need to round errors prior to compare
-    expect(double.parse(m[0].toStringAsFixed(2)), equals(1));
-    expect(double.parse(m[1].toStringAsFixed(2)), equals(0));
-    expect(double.parse(m[2].toStringAsFixed(2)), equals(0));
-    expect(double.parse(m[3].toStringAsFixed(2)), equals(1));
-    expect(double.parse(m[4].toStringAsFixed(2)), equals(0));
-    expect(double.parse(m[5].toStringAsFixed(2)), equals(0));
+    expect(double.parse(m[0]!.toStringAsFixed(2)), equals(1));
+    expect(double.parse(m[1]!.toStringAsFixed(2)), equals(0));
+    expect(double.parse(m[2]!.toStringAsFixed(2)), equals(0));
+    expect(double.parse(m[3]!.toStringAsFixed(2)), equals(1));
+    expect(double.parse(m[4]!.toStringAsFixed(2)), equals(0));
+    expect(double.parse(m[5]!.toStringAsFixed(2)), equals(0));
   });
 
 //  test('cache', () {
