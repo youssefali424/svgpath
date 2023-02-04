@@ -19,7 +19,7 @@ num fixInt(num value) {
 
 class Matrix {
   // list of _matrixes to apply
-  final List<List<num?>> queue = <List<num>>[];
+  final List<List<num?>> queue = <List<num?>>[];
 
   List<num?>? _cache;
 
