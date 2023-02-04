@@ -40,14 +40,14 @@ class Matrix {
   void translate(num? tx, num? ty) {
     if (tx != 0 || ty != 0) {
       _cache = null;
-      queue.add([1, 0, 0, 1, tx, ty]);
+      queue.add(<num?>[1, 0, 0, 1, tx, ty]);
     }
   }
 
   void scale(num? sx, num? sy) {
     if (sx != 1 || sy != 1) {
       _cache = null;
-      queue.add([sx, 0, 0, sy, 0, 0]);
+      queue.add(<num?>[sx, 0, 0, sy, 0, 0]);
     }
   }
 
@@ -60,7 +60,7 @@ class Matrix {
       var sin = math.sin(rad);
 
       _cache = null;
-      queue.add([cos, sin, -sin, cos, 0, 0]);
+      queue.add(<num?>[cos, sin, -sin, cos, 0, 0]);
 
       translate(-rx!, -ry!);
     }
@@ -69,14 +69,14 @@ class Matrix {
   void skewX(num? angle) {
     if (angle != 0) {
       _cache = null;
-      queue.add([1, 0, math.tan(angle! * math.pi / 180), 1, 0, 0]);
+      queue.add(<num?>[1, 0, math.tan(angle! * math.pi / 180), 1, 0, 0]);
     }
   }
 
   void skewY(num? angle) {
     if (angle != 0) {
       _cache = null;
-      queue.add([1, math.tan(angle! * math.pi / 180), 0, 1, 0, 0]);
+      queue.add(<num?>[1, math.tan(angle! * math.pi / 180), 0, 1, 0, 0]);
     }
   }
 
