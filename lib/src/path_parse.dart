@@ -100,7 +100,7 @@ class _State {
   int index = 0;
   int max;
   final List<List> result = [];
-  num param = 0;
+  double param = 0;
   String err = '';
   int segmentStart = 0;
   List data = [];
@@ -199,7 +199,7 @@ void _scanParam(_State state) {
   state.param = double.parse(state.path.substring(start, index));
 
   // Fix integer value
-  var integer = state.param.toInt();
+  var integer = state.param.truncateToDouble();
   if (integer == state.param) {
     // this is a integer value
     state.param = integer;

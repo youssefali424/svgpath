@@ -36,8 +36,8 @@ Matrix ParseTransform(String transform) {
 
     // extract params & att operation to matrix
     params = item.split(new RegExp(PARAMS_SPLIT_RE)).map((i) {
-      num val = double.parse(i);
-      var integer = val.toInt();
+      double val = double.parse(i);
+      var integer = val.truncateToDouble();
       if (integer == val) {
         val = integer;
       }

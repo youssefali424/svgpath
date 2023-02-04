@@ -2,10 +2,10 @@
 // is governed by a MIT license that can be found in the LICENSE file.
 
 class BoundingBox {
-  num _x;
-  num _y;
-  num _width;
-  num _height;
+  double _x;
+  double _y;
+  double _width;
+  double _height;
 
   BoundingBox(this._x, this._y, this._width, this._height);
 
@@ -35,10 +35,10 @@ class BoundingBox {
 
   BoundingBox round([int numberOfDecimal = 0]) {
     if (numberOfDecimal == 0) {
-      _x = _x.toInt();
-      _y = _y.toInt();
-      _width = _width.toInt();
-      _height = _height.toInt();
+      _x = _x.truncate().toDouble();
+      _y = _y.truncate().toDouble();
+      _width = _width.truncate().toDouble();
+      _height = _height.truncate().toDouble();
     } else {
       _x = double.parse(_x.toStringAsFixed(numberOfDecimal));
       _y = double.parse(_y.toStringAsFixed(numberOfDecimal));
@@ -48,8 +48,8 @@ class BoundingBox {
     return this;
   }
 
-  num get x => _x;
-  num get y => _y;
-  num get width => _width;
-  num get height => _height;
+  double get x => _x;
+  double get y => _y;
+  double get width => _width;
+  double get height => _height;
 }

@@ -11,9 +11,9 @@ const epsilon = 0.0000000001;
 const torad = pi / 180;
 
 class Ellipse {
-  num? rx;
-  num? ry;
-  num? ax;
+  double? rx;
+  double? ry;
+  double? ax;
 
   Ellipse(this.rx, this.ry, this.ax);
 
@@ -23,7 +23,7 @@ class Ellipse {
   //   | m[0] m[2] |
   //   | m[1] m[3] |
   //    -         -
-  void transform(List<num?> m) {
+  void transform(List<double?> m) {
     // We consider the current ellipse as image of the unit circle
     // by first scale(rx,ry) and then rotate(ax) ...
     // So we apply ma =  m x rotate(ax) x scale(rx,ry) to the unit circle.

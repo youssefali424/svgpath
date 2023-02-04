@@ -4,13 +4,15 @@
 import '../lib/src/svgpath.dart';
 import 'package:test/test.dart';
 import 'dart:io' show Platform, File;
-import 'package:path/path.dart' show dirname;
 
 void main() {
   test('big batch', () {
-    var path = dirname(Platform.script.toString());
-    var filePath = path.substring(path.lastIndexOf('file://') + 7);
-    var file = new File('$filePath/big.txt');
+    // var path = dirname(Platform.script.toString());
+    // var filePath = path.substring(path.lastIndexOf('file://') + 7);
+    var file = new File('test/big.txt');
+    if(!file.existsSync()) {
+      throw 'File not found: ${file.absolute.path}';
+    }
     var lines = file.readAsLinesSync();
     for (var line in lines) {
       if (line == null) {

@@ -11,7 +11,7 @@ import 'dart:math' as math;
 const tau = math.pi * 2;
 
 // Calculate an angle between two vectors
-num vectorAngle(num ux, num uy, num vx, num vy) {
+double vectorAngle(double ux, double uy, double vx, double vy) {
   var sign = (ux * vy - uy * vx) < 0 ? -1 : 1;
   var umag = sqrt(ux * ux + uy * uy);
   var vmag = sqrt(vx * vx + vy * vy);
@@ -33,8 +33,17 @@ num vectorAngle(num ux, num uy, num vx, num vy) {
 // see http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
 //
 // Return [cx, cy, theta1, delta_theta]
-List<num> getArcCenter(num x1, num y1, num x2, num y2, num? fa, num? fs, num rx,
-    num ry, num sin_phi, num cos_phi) {
+List<double> getArcCenter(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double? fa,
+    double? fs,
+    double rx,
+    double ry,
+    double sin_phi,
+    double cos_phi) {
   // Step 1.
   //
   // Moving an ellipse so origin will be the middle point between our two
@@ -54,7 +63,7 @@ List<num> getArcCenter(num x1, num y1, num x2, num y2, num? fa, num? fs, num rx,
   // Compute coordinates of the centre of this ellipse (cx', cy')
   // in the new coordinate system.
   //
-  num radicant = (rx_sq * ry_sq) - (rx_sq * y1p_sq) - (ry_sq * x1p_sq);
+  double radicant = (rx_sq * ry_sq) - (rx_sq * y1p_sq) - (ry_sq * x1p_sq);
 
   if (radicant < 0) {
     // due to rounding errors it might be e.g. -1.3877787807814457e-17
@@ -72,8 +81,8 @@ List<num> getArcCenter(num x1, num y1, num x2, num y2, num? fa, num? fs, num rx,
   // Transform back to get centre coordinates (cx, cy) in the original
   // coordinate system.
   //
-  num cx = cos_phi * cxp - sin_phi * cyp + (x1 + x2) / 2;
-  num cy = sin_phi * cxp + cos_phi * cyp + (y1 + y2) / 2;
+  double cx = cos_phi * cxp - sin_phi * cyp + (x1 + x2) / 2;
+  double cy = sin_phi * cxp + cos_phi * cyp + (y1 + y2) / 2;
 
   // Step 4.
   //
@@ -101,7 +110,7 @@ List<num> getArcCenter(num x1, num y1, num x2, num y2, num? fa, num? fs, num rx,
 // Approximate one unit arc segment with bézier curves,
 // see http://math.stackexchange.com/questions/873224
 //
-List<num> approximateUnitArc(theta1, delta_theta) {
+List<double> approximateUnitArc(theta1, delta_theta) {
   var alpha = 4 / 3 * tan(delta_theta / 4);
 
   var x1 = cos(theta1);
@@ -121,8 +130,8 @@ List<num> approximateUnitArc(theta1, delta_theta) {
   ];
 }
 
-List<List<num>> a2c(
-    num x1, num y1, num x2, num y2, num? fa, num? fs, num? rx, num? ry, phi) {
+List<List<double>> a2c(double x1, double y1, double x2, double y2, double? fa,
+    double? fs, double? rx, double? ry, phi) {
   var sin_phi = sin(phi * tau / 360);
   var cos_phi = cos(phi * tau / 360);
 
@@ -156,7 +165,7 @@ List<List<num>> a2c(
   //
   var cc = getArcCenter(x1, y1, x2, y2, fa, fs, rx, ry, sin_phi, cos_phi);
 
-  var result = <List<num>>[];
+  var result = <List<double>>[];
   var theta1 = cc[2];
   var delta_theta = cc[3];
 
@@ -174,7 +183,7 @@ List<List<num>> a2c(
   // We have a bezier approximation of a unit circle,
   // now need to transform back to the original ellipse
   //
-  return result.map((List<num> curve) {
+  return result.map((List<double> curve) {
     for (var i = 0; i < curve.length; i += 2) {
       var x = curve[i];
       var y = curve[i + 1];

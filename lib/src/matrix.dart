@@ -3,29 +3,29 @@
 
 import 'dart:math' as math;
 
-num toFixed(num value, int digits) {
-  num rt = double.parse(value.toStringAsFixed(digits));
+double toFixed(num value, int digits) {
+  double rt = double.parse(value.toStringAsFixed(digits));
   return fixInt(rt);
 }
 
-num fixInt(num value) {
+double fixInt(double value) {
   var integer = value.toInt();
 
   if (integer == value) {
-    return integer;
+    return integer.toDouble();
   }
   return value;
 }
 
 class Matrix {
   // list of _matrixes to apply
-  final List<List<num?>> queue = <List<num?>>[];
+  final List<List<double>> queue = <List<double>>[];
 
-  List<num?>? _cache;
+  List<double>? _cache;
 
   Matrix();
 
-  Matrix matrix(List<num> m) {
+  Matrix matrix(List<double> m) {
     if (m[0] != 1 ||
         m[1] != 0 ||
         m[2] != 0 ||
@@ -37,21 +37,21 @@ class Matrix {
     return this;
   }
 
-  void translate(num? tx, num? ty) {
+  void translate(double tx, double ty) {
     if (tx != 0 || ty != 0) {
       _cache = null;
-      queue.add(<num?>[1, 0, 0, 1, tx, ty]);
+      queue.add([1, 0, 0, 1, tx, ty]);
     }
   }
 
-  void scale(num? sx, num? sy) {
+  void scale(double sx, double sy) {
     if (sx != 1 || sy != 1) {
       _cache = null;
-      queue.add(<num?>[sx, 0, 0, sy, 0, 0]);
+      queue.add([sx, 0, 0, sy, 0, 0]);
     }
   }
 
-  void rotate(num? angle, [num? rx = 0, num? ry = 0]) {
+  void rotate(double? angle, [double rx = 0, double ry = 0]) {
     if (angle != 0) {
       translate(rx, ry);
 
@@ -60,27 +60,27 @@ class Matrix {
       var sin = math.sin(rad);
 
       _cache = null;
-      queue.add(<num?>[cos, sin, -sin, cos, 0, 0]);
+      queue.add([cos, sin, -sin, cos, 0, 0]);
 
-      translate(-rx!, -ry!);
+      translate(-rx, -ry);
     }
   }
 
-  void skewX(num? angle) {
+  void skewX(double? angle) {
     if (angle != 0) {
       _cache = null;
-      queue.add(<num?>[1, 0, math.tan(angle! * math.pi / 180), 1, 0, 0]);
+      queue.add([1, 0, math.tan(angle! * math.pi / 180), 1, 0, 0]);
     }
   }
 
-  void skewY(num? angle) {
+  void skewY(double? angle) {
     if (angle != 0) {
       _cache = null;
-      queue.add(<num?>[1, math.tan(angle! * math.pi / 180), 0, 1, 0, 0]);
+      queue.add([1, math.tan(angle! * math.pi / 180), 0, 1, 0, 0]);
     }
   }
 
-  List<num?>? toArray() {
+  List<double>? toArray() {
     if (_cache != null) {
       return _cache;
     }
@@ -118,12 +118,13 @@ class Matrix {
 
     // Apply matrix to point
     return [
-      fixInt(x! * _cache![0]! + y! * _cache![2]! + (isRelative ? 0 : _cache![4]!)),
-      fixInt(x * _cache![1]! + y * _cache![3]! + (isRelative ? 0 : _cache![5]!))
+      fixInt(
+          x! * _cache![0] + y! * _cache![2] + (isRelative ? 0 : _cache![4])),
+      fixInt(x * _cache![1] + y * _cache![3] + (isRelative ? 0 : _cache![5]))
     ];
   }
 
-  List<num> _multiply(List<num?> m1, List<num?> m2) {
+  List<double> _multiply(List<double?> m1, List<double?> m2) {
     return [
       m1[0]! * m2[0]! + m1[2]! * m2[1]!,
       m1[1]! * m2[0]! + m1[3]! * m2[1]!,
